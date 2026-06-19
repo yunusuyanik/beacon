@@ -1,0 +1,45 @@
+name: DB Change Review
+description: Catch risky database changes before merge and comment on pull requests.
+author: yunusuyanik
+
+branding:
+  icon: database
+  color: blue
+
+inputs:
+  github-token:
+    description: GitHub token used to create or update the pull request comment.
+    required: true
+  base:
+    description: Git ref to compare against.
+    required: false
+    default: origin/main
+  comment-on-clean:
+    description: Comment even when no database-related files changed.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Enable pnpm
+      shell: bash
+      run: corepack enable
+
+    - name: Install DB Change Review
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: pnpm install --frozen-lockfile
+
+    - name: Build DB Change Review
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: pnpm build
+
+    - name: Comment on pull request
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        DB_CHANGE_REVIEW_COMMENT_ON_CLEAN: ${{ inputs.comment-on-clean }}
+      run: node "${{ github.action_path }}/packages/cli/dist/index.js" comment --base "${{ inputs.base }}"
