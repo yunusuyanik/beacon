@@ -8,8 +8,8 @@ branding:
 
 inputs:
   github-token:
-    description: GitHub token used to create or update the pull request comment.
-    required: true
+    description: GitHub token used to create or update the pull request comment. Defaults to the workflow GITHUB_TOKEN.
+    required: false
   base:
     description: Git ref to compare against.
     required: false
@@ -44,7 +44,7 @@ runs:
       shell: bash
       working-directory: ${{ github.workspace }}
       env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token || github.token }}
         DB_CHANGE_REVIEW_COMMENT_ON_CLEAN: ${{ inputs.comment-on-clean }}
         DB_CHANGE_REVIEW_DIALECT: ${{ inputs.dialect }}
       run: node "${{ github.action_path }}/packages/cli/dist/index.js" comment --base "${{ inputs.base }}" --dialect "${{ inputs.dialect }}"

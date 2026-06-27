@@ -71,9 +71,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: yunusuyanik/db-change-review@v1.0.0
+      - uses: yunusuyanik/db-change-review@v1.1.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           base: origin/${{ github.base_ref }}
           dialect: postgres
 ```
@@ -90,7 +89,7 @@ The workflow permissions matter. DB Change Review reads the diff and writes a pu
 
 | Input | Required | Default | Description |
 | --- | --- | --- | --- |
-| `github-token` | Yes | | Token used to create or update the PR comment. Use `${{ secrets.GITHUB_TOKEN }}`. |
+| `github-token` | No | workflow `GITHUB_TOKEN` | Token used to create or update the PR comment. You usually do not need to set this. |
 | `base` | No | `origin/main` | Git ref to compare against. |
 | `dialect` | No | `postgres` | SQL dialect for dialect-specific rules. Supported values: `postgres`, `sqlserver`, `mysql`, `unknown`. |
 | `comment-on-clean` | No | `false` | Post a clean report even when no database-related files changed. |
